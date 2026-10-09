@@ -11,6 +11,7 @@ const page=await context.newPage(),errors=[];
 page.on('pageerror',error=>errors.push(error.message));
 page.on('console',message=>console.log(message.type()+': '+message.text()));
 const pixel=()=>page.locator('#display').evaluate(canvas=>Array.from(canvas.getContext('2d').getImageData(0,0,1,1).data));
+const heldKeys=()=>page.locator('#display').evaluate(canvas=>{const p=canvas.getContext('2d').getImageData(1,0,1,1).data;return {mask:p[0]|p[1]<<8,last:p[2]};});
 async function until(predicate,timeout=300000){const deadline=Date.now()+timeout;while(Date.now()<deadline){if(await predicate())return;await new Promise(resolve=>setTimeout(resolve,500));}throw Error('Timed out waiting for runtime state');}
 try {
   await page.goto('http://127.0.0.1:4173/');
@@ -37,10 +38,32 @@ try {
   await page.getByRole('button',{name:'Close settings',exact:true}).click();await page.locator('#continue').click();
   const previous=(await pixel())[1];await page.locator('[data-code="Digit6"]').filter({visible:true}).first().click();
   await until(async()=>(await pixel())[1]>previous);
+  const touch=await context.newCDPSession(page);
+  await touch.send('Emulation.setTouchEmulationEnabled',{enabled:true,maxTouchPoints:5});
+  const point=async(selector,id,offset=0)=>{const box=await page.locator(selector).boundingBox();assert.ok(box);return {x:box.x+box.width/2+offset,y:box.y+box.height/2,id};};
+  const sendTouch=(type,touchPoints=[])=>touch.send('Input.dispatchTouchEvent',{type,touchPoints});
+  const right=await point('.dpad [data-code="Digit6"]',1,-4),right2=await point('.dpad [data-code="Digit6"]',2,4);
+  await sendTouch('touchStart',[right,right2]);await until(async()=>(await heldKeys()).mask===64);
+  await sendTouch('touchMove',[right2]);await new Promise(resolve=>setTimeout(resolve,750));assert.equal((await heldKeys()).mask,64,'Remaining finger must keep the key held');
+  await sendTouch('touchEnd');await until(async()=>(await heldKeys()).mask===0);
+  const action=await point('.action-pad [data-code="Digit5"]',2);
+  await sendTouch('touchStart',[right,action]);await until(async()=>(await heldKeys()).mask===(64|32));
+  await sendTouch('touchMove',[action]);await until(async()=>(await heldKeys()).mask===32);
+  await sendTouch('touchEnd');await until(async()=>(await heldKeys()).mask===0);
+  const diagonal=await point('.dpad [data-code="Digit3"]',1);
+  await sendTouch('touchStart',[diagonal]);await until(async()=>{const k=await heldKeys();return k.mask===8&&k.last===51;});
+  await page.keyboard.press('Escape');await page.locator('#paused-overlay').waitFor({state:'visible'});
+  await until(async()=>(await heldKeys()).mask===0);await sendTouch('touchEnd');
+  await page.locator('#continue').click();await until(async()=>(await heldKeys()).mask===0);
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,'Mobile layout must fit horizontally');
+  await page.locator('#settings').click();await page.locator('#button-size').evaluate(input=>{input.value='72';input.dispatchEvent(new Event('input',{bubbles:true}));});
+  await page.getByRole('button',{name:'Close settings',exact:true}).click();await page.locator('#continue').click();
+  await page.setViewportSize({width:320,height:720});
+  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,'Largest controls must fit a 320 px screen');
+  await page.setViewportSize({width:390,height:844});
   await page.screenshot({path:'browser-results/mobile.png'});
   assert.deepEqual(errors,[],'No unhandled browser errors');
-  await writeFile('browser-results/result.json',JSON.stringify({passed:true,checks:['runtime launch','keyboard','original lifecycle pause','RMS backup/export/import','reload JAR persistence','restored RMS state','390px touch button','no horizontal overflow','no page errors']},null,2));
+  await writeFile('browser-results/result.json',JSON.stringify({passed:true,checks:['runtime launch','keyboard','original lifecycle pause','RMS backup/export/import','reload JAR persistence','restored RMS state','390px touch button','two fingers on one button','simultaneous direction and action','native diagonal key','held touch released on pause','320px maximum-size controls','no horizontal overflow','no page errors']},null,2));
   console.log('Browser host integration passed. This fixture does not verify Gangstar Rio campaign compatibility.');
 } catch(error) {await page.screenshot({path:'browser-results/failure.png'});await writeFile('browser-results/result.json',JSON.stringify({passed:false,error:error.stack,errors},null,2));throw error;}
 finally {await browser.close();await new Promise(resolve=>server.close(resolve));}
