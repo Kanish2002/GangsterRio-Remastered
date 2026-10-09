@@ -1,0 +1,32 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {deflateRawSync} from 'node:zlib';
+import {makeZip,readDirectory,extractEntry,parseManifest,inspectJar,crc32} from '../src/archive.js';
+import {InputState,gamepadCodes} from '../src/input.js';
+import {validateSave,encodeBytes} from '../src/storage.js';
+import {createStaticServer} from '../scripts/serve.mjs';
+import {mkdtemp,writeFile,rm} from 'node:fs/promises';
+import {tmpdir} from 'node:os';
+const encoder=new TextEncoder();
+test('ZIP roundtrip validates CRC and full contents',async()=>{const data=encoder.encode('RMS record 123'),archive=readDirectory(makeZip({'state.rms':data}).buffer);assert.deepEqual(await extractEntry(archive,archive.entries[0]),data);assert.equal(crc32(encoder.encode('123456789')),0xcbf43926);});
+test('ZIP rejects truncated, duplicate and traversal entries',()=>{const good=makeZip({'file':encoder.encode('123')});assert.throws(()=>readDirectory(good.slice(0,-1).buffer));assert.throws(()=>readDirectory(makeZip({'../escape':good}).buffer),/Unsafe/);assert.throws(()=>readDirectory(makeZip({'C:/bad':good}).buffer),/Unsafe/);assert.throws(()=>readDirectory(makeZip({'dir\\bad':good}).buffer),/Unsafe/);});
+test('ZIP rejects checksum corruption',async()=>{const b=makeZip({'rms':encoder.encode('checkpoint')});const a=readDirectory(b.buffer);b[a.entries[0].start]^=1;await assert.rejects(()=>extractEntry(a,a.entries[0]),/checksum/);});
+test('ZIP deflate decoding validates exact expanded size',async()=>{const data=encoder.encode('a'.repeat(4000)),compressed=deflateRawSync(data),zip=makeZip({'file':compressed}),v=new DataView(zip.buffer);const directory=readDirectory(zip.buffer),central=30+4+compressed.length;v.setUint16(8,8,true);v.setUint32(14,crc32(data),true);v.setUint32(22,data.length,true);v.setUint16(central+10,8,true);v.setUint32(central+16,crc32(data),true);v.setUint32(central+24,data.length,true);const a=readDirectory(zip.buffer);assert.deepEqual(await extractEntry(a,a.entries[0]),data);});
+test('manifest continuation and colon values preserve semantics',()=>{assert.deepEqual(parseManifest('MIDlet-Name: Gangstar Rio: City of Saints\r\n Long title\r\nMIDlet-Version: 1.0.9\r\n'),{'MIDlet-Name':'Gangstar Rio: City of SaintsLong title','MIDlet-Version':'1.0.9'});});
+test('JAR requires matching compiled MIDlet and hashes original bytes',async()=>{const mf=encoder.encode('MIDlet-Name: Fixture\nMIDlet-1: Fixture, /icon.png, test.Main\n');const jar=makeZip({'META-INF/MANIFEST.MF':mf,'test/Main.class':new Uint8Array([0xca,0xfe,0xba,0xbe])});const info=await inspectJar(jar.buffer);assert.equal(info.classes,1);assert.equal(info.hash.length,64);await assert.rejects(()=>inspectJar(makeZip({'META-INF/MANIFEST.MF':mf}).buffer),/entry class/);});
+test('overlapping keyboard and touch sources release a key only after both release',()=>{const events=[],input=new InputState((...e)=>events.push(e));input.press('keyboard','Digit2');input.press('touch','Digit2');input.release('keyboard');assert.deepEqual(events,[[true,'Digit2']]);input.release('touch');assert.deepEqual(events,[[true,'Digit2'],[false,'Digit2']]);});
+test('remapping held input and interruption releases all active keys',()=>{const events=[],input=new InputState((...e)=>events.push(e));input.press('p','Digit2');input.press('p','Digit4');input.reset();assert.deepEqual(events,[[true,'Digit2'],[false,'Digit2'],[true,'Digit4'],[false,'Digit4']]);});
+test('gamepad axes dead zone, directions and primary actions',()=>{const buttons=Array.from({length:16},()=>({pressed:false}));buttons[0].pressed=true;assert.deepEqual(gamepadCodes({buttons,axes:[-.5,.1]}),['Digit4','Digit5']);});
+test('save import rejects other builds, invalid schemas and data',()=>{const save={schema:1,kind:'rio-rms-backup',gameHash:'abc',createdAt:'2026-10-10',rms:encodeBytes(new Uint8Array([1,2,3]))};assert.deepEqual(validateSave(save,'abc'),new Uint8Array([1,2,3]));assert.throws(()=>validateSave(save,'other'));assert.throws(()=>validateSave({...save,schema:2},'abc'));assert.throws(()=>validateSave({...save,rms:'@@'},'abc'));});
+test('HTTP static server supplies actual MIME, HEAD and byte ranges',async()=>{const dir=await mkdtemp(tmpdir()+'/rio-test-');await writeFile(dir+'/sample.js','0123456789');const server=createStaticServer(dir);await new Promise(r=>server.listen(0,'127.0.0.1',r));const url='http://127.0.0.1:'+server.address().port+'/sample.js';try{const response=await fetch(url,{headers:{Range:'bytes=2-4'}});assert.equal(response.status,206);assert.equal(response.headers.get('content-type'),'text/javascript');assert.equal(response.headers.get('content-range'),'bytes 2-4/10');assert.equal(await response.text(),'234');const suffix=await fetch(url,{headers:{Range:'bytes=-3'}});assert.equal(await suffix.text(),'789');const head=await fetch(url,{method:'HEAD'});assert.equal(head.headers.get('content-length'),'10');assert.equal(await head.text(),'');const bad=await fetch(url,{headers:{Range:'bytes=20-'}});assert.equal(bad.status,416);}finally{await new Promise(r=>server.close(r));await rm(dir,{recursive:true});}});
+
+import {EventQueue} from '../src/eventqueue.js';
+test('event queue drains its last pending item and wakes an idle dispatcher',async()=>{
+  const q=new EventQueue();q.queueEvent({kind:'down'});q.queueEvent({kind:'up'});
+  assert.equal((await q.waitForEvent()).kind,'down');
+  assert.equal((await q.waitForEvent()).kind,'up');
+  const waiting=q.waitForEvent();q.queueEvent({kind:'host'});
+  assert.equal((await waiting).kind,'host');
+  q.queueEvent({kind:'frame'});q.queueEvent({kind:'frame'},e=>e.kind==='frame');
+  assert.equal(q.queue.length,1);
+});

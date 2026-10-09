@@ -1,18 +1,27 @@
-# Implementation status (2026-10-10)
+# Implementation status — 2026-10-10
 
-| Feature | State | Evidence / limitation |
-| --- | --- | --- |
-| GitHub starter repository | Implemented | Source files, build script, tests |
-| Modern responsive launcher | Implemented | Static HTML/CSS, pending cross-browser visual QA |
-| Pinned Java ME browser runtime packaging | Implemented in build script | Production fetch/build needs network execution |
-| Game-provided JAR installation | Via upstream emulator | Requires gameplay verification |
-| Java ME game compatibility | **Not verified** | No authorized Gangstar Rio JAR supplied |
-| Original code architecture study | **Blocked** | No permission-cleared original |
-| Gameplay and missions | **Not verified** | Emulator may be incompatible |
-| High-resolution sprite art | **Not implemented** | Authorized reference/assets required |
-| Modernized effects/audio | **Not implemented** | Gameplay baseline needed |
-| Custom touch/desktop controls | **Not implemented** | Upstream emulator controls available |
-| Persistence | **Not verified for title** | Upstream runtime import/export available |
-| Vercel production smoke test | **Pending** | Needs live deployment |
+This is an emulation-first preservation milestone. It is **not a completed HD remaster**.
 
-Next: validate runtime build and game launch; capture lawful reference, make per-device compatibility matrix; only then integrate graphical/audio improvements.
+| Feature | Status |
+| --- | --- |
+| Supplied JAR inventory, manifest, hash, selected bytecode/decompiler inspection | Completed, with authenticity and reconstruction limits |
+| Upstream browser launch beyond menus into beach tutorial | Verified |
+| Self-hosted pinned runtime build | Verified locally |
+| Integrated local JAR/JAD import, keyboard/touch controls, settings and original lifecycle pause | Implemented; production tests pending |
+| Original RMS backup/export/import and browser persistence | Implemented; production tests pending |
+| Gamepad mapping | Unit tested; hardware test pending |
+| Full original gameplay/campaign compatibility | Unverified |
+| HD sprites, new animation frames, environmental artwork | Not implemented |
+| Audio remix, spatial audio, separate music/effects/ambient sliders | Not implemented; original runtime audio + master gain only |
+| GitHub push / production deployment | Pending verification |
+| Mobile/iOS/fullscreen/performance targets | Unverified |
+
+## Prioritized backlog
+
+1. Verify custom production launch, controls, original pause, RMS export/import and refresh persistence; fix blockers.
+2. Build repeatable original mission/vehicle/combat/police test matrix, save checkpoint traces and independent emulator comparison. Obtain authorized additional variants before selecting the most complete release.
+3. Establish modification/distribution rights; decode packed sprite/frame/map/audio formats and map animation timing/collision alignment.
+4. Implement opt-in resource substitution; draw authorized 2×/4× sprites and tiles. Validate the same gameplay traces before/after.
+5. Add visual-only intermediate animation frames/effects and licensed audio replacement with measured timing. Retain original mode for comparisons.
+6. Exercise Android/iOS, touch/gamepads, browser suspension/audio interruption; measure and optimize actual runtime performance.
+7. Add PWA/offline distribution only after verifying licensing, cache sizes, storage eviction and CheerpJ hosting constraints.
