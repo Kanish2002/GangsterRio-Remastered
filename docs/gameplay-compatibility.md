@@ -14,4 +14,4 @@ Preservation approach: unchanged game bytecode controls movement, collision, com
 | Original device save conversion | Not implemented | External RMS format mapping and exact-build tests |
 | Other device editions | No lawful copies compared | Per-build mechanics/features matrix |
 
-No unavoidable gameplay differences are yet quantified. Lack of observed differences is not equivalence proof. The wrapper does not rewrite game rules; altered display resolution or incorrect phone profile may cause incompatibility and should match the original variant.
+Known presentation difference: MIDI instrumentation uses original synthesized samples instead of upstream's unlicensed Roland bank. Sound is not identical to the reference. No gameplay differences are yet quantified. Lack of observed differences is not equivalence proof. The wrapper does not rewrite game rules; altered display resolution or incorrect phone profile may cause incompatibility and should match the original variant.

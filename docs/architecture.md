@@ -15,7 +15,7 @@ FreeJ2ME-Web supplies MIDP/CLDC APIs and canvas, input, RMS, media and MIDI brid
 - `HostBridge.java`: invokes the original protected MIDlet pause/start lifecycle and exports/imports the corresponding RMS directory. Import is permitted before launch only, validates paths/expanded size, and restores old data on failure.
 - `build.mjs`: reproducible pinned runtime packaging and matching license/source distribution. `serve.mjs`: local static server including HEAD and byte-range handling needed by the Java runtime.
 
-Each exact JAR gets `rio-<first 24 SHA-256 hex>` as its installation ID. Backup validation checks the full SHA-256. Display scaling changes output pixels only; original canvas dimensions and simulation remain native. Phone/display settings apply at launch. Master gain affects MIDI and media; separate original music/effect/ambient streams cannot be reliably distinguished and are not independently mixed.
+Each exact JAR gets `rio-<first 24 SHA-256 hex>` as its installation ID. Backup validation checks the full SHA-256. Display scaling changes output pixels only; original canvas dimensions and simulation remain native. Phone/display settings apply at launch. The upstream embedded Roland sample bank is replaced by original synthesized waveforms during build, with matching generated source/header. MIDI note sequences and event timing are unchanged; instrument timbres are different. Master gain affects MIDI and media; separate original music/effect/ambient streams cannot be reliably distinguished and are not independently mixed.
 
 ## Lifecycle and persistence
 

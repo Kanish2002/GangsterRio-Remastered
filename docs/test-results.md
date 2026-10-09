@@ -2,7 +2,7 @@
 
 ## Automated
 
-`npm test`: **12 passed, 0 failed**. Checks ZIP boundaries/path traversal/duplicates/CRC/deflate, manifest parsing, declared MIDlet class and checksum, overlapping input ownership, interrupted held keys, gamepad dead zone/mapping, backup schema/JAR mismatch/base64 rejection, HTTP MIME/HEAD/byte ranges, and final-event queue regression.
+`npm test`: **13 passed, 0 failed**. Checks ZIP boundaries/path traversal/duplicates/CRC/deflate, manifest parsing, declared MIDlet class and checksum, overlapping input ownership, interrupted held keys, gamepad dead zone/mapping, backup schema/JAR mismatch/base64 rejection, HTTP MIME/HEAD/byte ranges, final-event queue regression, and deterministic original audio-bank structure.
 
 `RUNTIME_ARCHIVE=<matching pinned source> npm run build`: **passed**. Emulator SHA-256 validated; static runtime, Java 8 host JAR and corresponding source generated. No proprietary game is in output.
 
@@ -22,4 +22,8 @@ Compiled the actual HostBridge with the pinned emulator API on Java 17 targeting
 
 ## CI browser check
 
-GitHub workflow `Verify preservation host` builds an original, distributable Java ME fixture. Playwright launches it through this host, checks keyboard input, lifecycle pause, RMS export/import, reload persistence, a 390 px layout and visible touch button. Screenshots and JSON results are uploaded as a seven-day artifact. No proprietary game is passed to CI. Status is pending execution until a successful workflow result is recorded; the test fixture is not a substitute game.
+GitHub workflow `Verify preservation host` builds an original, distributable Java ME fixture. Playwright launches it through this host, checks keyboard input, lifecycle pause, RMS export/import, reload persistence, a 390 px layout and visible touch button. Screenshots and JSON results are uploaded as a seven-day artifact. No proprietary game is passed to CI. Workflow run [38002090772](https://github.com/Kanish2002/GangsterRio-Remastered/actions/runs/38002090772) passed on commit ebe37afb25ee5f2ecf1b5635d176d501948949bf before the audio-bank substitution. The changed bank requires a fresh CI pass; the test fixture is not a substitute game.
+
+## Audio-bank substitution check
+
+The modified MIDI WebAssembly module compiled and instantiated in Node. All 128 program slots plus percussion produced finite, nonzero audio; minimum measured peak 0.03879. The test exercises actual FluidSynth output after replacing the complete embedded sample bank. This is synthesis validation, not a claim of authentic or HD remixed game audio.

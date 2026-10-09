@@ -30,3 +30,12 @@ test('event queue drains its last pending item and wakes an idle dispatcher',asy
   q.queueEvent({kind:'frame'});q.queueEvent({kind:'frame'},e=>e.kind==='frame');
   assert.equal(q.queue.length,1);
 });
+
+import {createBank} from '../scripts/midi-bank.mjs';
+test('generated audio bank is original, structurally bounded and deterministic',()=>{
+  const a=createBank(3208108),b=createBank(3208108);
+  assert.deepEqual(a,b);assert.equal(a.length,3208108);
+  assert.equal(a.toString('ascii',0,4),'RIFF');assert.equal(a.readUInt32LE(4),a.length-8);
+  assert.equal(a.toString('ascii',8,12),'sfbk');assert.ok(a.includes(Buffer.from('GPL-3.0-or-later')));
+  assert.equal(a.includes(Buffer.from('Roland')),false);
+});

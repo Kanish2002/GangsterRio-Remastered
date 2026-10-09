@@ -14,7 +14,7 @@ JAR bytes, settings, and records stay in this browser's IndexedDB-backed storage
 
 ## Develop
 
-Node 24+, `tar`, and internet access:
+Node 24+, `tar`, `patch`, and internet access:
 
 ```sh
 npm test
@@ -22,7 +22,7 @@ npm run build
 npm run preview
 ```
 
-No npm dependencies are required. Build downloads upstream commit `c19416e75cbc15f9a27f7e967ee81cb108761e30`, checks the emulator JAR checksum, packages the custom Java host bridge, and writes static output to `dist`. `RUNTIME_ARCHIVE=/absolute/path/to/source.tar.gz npm run build` supports an independently obtained matching source archive. Vercel uses `npm run build`, output `dist`, no server-side game engine.
+No npm dependencies are required. Build downloads upstream commit `c19416e75cbc15f9a27f7e967ee81cb108761e30`, checks the emulator JAR checksum, packages the custom Java host bridge, and writes static output to `dist`. `RUNTIME_ARCHIVE=/absolute/path/to/source.tar.gz npm run build` supports an independently obtained matching source archive. `FFMPEG_ARCHIVE` and `X264_ARCHIVE` can supply matching codec source archives; otherwise their pinned, checksum-verified sources are downloaded and bundled for license compliance. Vercel uses `npm run build`, output `dist`, no server-side game engine.
 
 The custom host bridge's Java 8 class is stored as base64 with its source. Recompile with Java 8+ (`javac --release 8 -cp /path/to/freej2me-web.jar -d /tmp/rio-host runtime-host/org/rio/HostBridge.java`), then base64-encode `/tmp/rio-host/org/rio/HostBridge.class` into `runtime-host/HostBridge.class.b64`.
 
@@ -34,6 +34,6 @@ Original missions, vehicles, physics, AI, and difficulty run as original bytecod
 
 ## Licenses
 
-Custom integration: GPL-3.0-or-later. The distribution includes FreeJ2ME-Web's license, corresponding runtime source, and the custom bridge source. Third-party components retain their own notices. CheerpJ is a separately hosted proprietary runtime; verify [its licensing conditions](https://cheerpj.com/docs/licensing) before commercial deployment. This project is not affiliated with Gameloft.
+Custom integration: GPL-3.0-or-later. The distribution includes FreeJ2ME-Web's license, corresponding modified runtime source, and the custom bridge source. The upstream Roland MIDI bank is replaced with original GPL synthesized samples; MIDI timbres therefore differ from the reference. Unrelated sample-game/media files are excluded. Third-party components retain their own notices. CheerpJ is a separately hosted proprietary runtime; verify [its licensing conditions](https://cheerpj.com/docs/licensing) before commercial deployment. This project is not affiliated with Gameloft.
 
 GitHub Actions also runs the original host fixture in Playwright (`e2e/browser-check.mjs`) and publishes browser test artifacts. It never installs the proprietary game in CI. The first deployment attempt was blocked by the Vercel connection's missing access to the existing `kanish-tech` project scope; no live production URL has been verified.

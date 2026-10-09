@@ -4,6 +4,7 @@
 | --- | --- | --- |
 | Game sprites, tiles, maps, music, scripts | No | Read locally from user-supplied JAR at runtime |
 | HD characters/vehicles/environments | No | Not implemented; packed-resource decoder and permissions needed |
+| MIDI synthesis bank | Yes | Original mathematical waveforms, 128 program slots and percussion; GPL-3.0-or-later; timbres differ from upstream/reference |
 | New animation frames | No | Not implemented |
 | Remixed sound effects or music | No | Not implemented |
 | Host interface | Yes | Original CSS/text/buttons; no third-party artwork or font download |

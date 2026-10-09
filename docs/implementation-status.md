@@ -16,7 +16,8 @@ This is an emulation-first preservation milestone. It is **not a completed HD re
 | GitHub source publication | Verified remote commit e8a9c9aae9f7101a19d14dfc60f1aea09f37deea |
 | Vercel deployment | Blocked by 403: current connection lacks access to kanish-tech; no CLI credentials |
 | Java RMS bridge | Real export/restore and rejected-import preservation test passed |
-| CI browser integration | Added original fixture and workflow; execution pending |
+| CI browser integration | Passed actual Chromium runtime/keyboard/pause/RMS/reload/390px touch checks on run 38002090772; audio-bank change needs fresh pass |
+| Audio-bank provenance | Unlicensed upstream sample bank replaced by original GPL synth samples; all 128 programs + percussion emit audio |
 | Mobile/iOS/fullscreen/performance targets | Unverified |
 
 ## Prioritized backlog
