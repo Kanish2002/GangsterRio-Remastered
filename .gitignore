@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.runtime-build/
+.vercel/
+.DS_Store
+*.jar
+*.jad
+*.class
+*.sav
+*.rms
