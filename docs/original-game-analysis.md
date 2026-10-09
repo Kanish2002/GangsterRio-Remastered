@@ -34,4 +34,4 @@ Pinned upstream FreeJ2ME-Web was opened in Chromium; the supplied copy was impor
 
 This establishes execution beyond menus. It does not verify combat, driving, all missions, police, economy, or a completed campaign. No independent desktop-emulator comparison or deterministic gameplay trace has been captured. These gaps must be resolved before claiming full fidelity or modifying gameplay presentation.
 
-References: [Gameloft 2011 feature-phone announcement](https://www.gameloft.com/newsroom/gameloft-to-release-five-new-games-for-mobile-phones-by-the-end-of-2011), [FreeJ2ME-Web source](https://github.com/zb3/freej2me-web), [CFR](https://www.benf.org/other/cfr/).
+References: [Gameloft 2011 feature-phone announcement](https://www.gameloft.com/newsroom/gameloft-unveils-its-half-year-2011-lineup-for-feature-1757), [FreeJ2ME-Web source](https://github.com/zb3/freej2me-web), [CFR](https://www.benf.org/other/cfr/).

@@ -22,8 +22,14 @@ Compiled the actual HostBridge with the pinned emulator API on Java 17 targeting
 
 ## CI browser check
 
-GitHub workflow `Verify preservation host` builds an original, distributable Java ME fixture. Playwright launches it through this host, checks keyboard input, lifecycle pause, RMS export/import, reload persistence, a 390 px layout and visible touch button. Screenshots and JSON results are uploaded as a seven-day artifact. No proprietary game is passed to CI. Workflow run [38002090772](https://github.com/Kanish2002/GangsterRio-Remastered/actions/runs/38002090772) passed on commit ebe37afb25ee5f2ecf1b5635d176d501948949bf before the audio-bank substitution. The changed bank requires a fresh CI pass; the test fixture is not a substitute game.
+GitHub workflow `Verify preservation host` builds an original, distributable Java ME fixture. Playwright launches it through this host, checks keyboard input, lifecycle pause, RMS export/import, reload persistence, a 390 px layout and visible touch button. Screenshots and JSON results are uploaded as a seven-day artifact. No proprietary game is passed to CI. Workflow run [38002090772](https://github.com/Kanish2002/GangsterRio-Remastered/actions/runs/38002090772) passed on commit ebe37afb25ee5f2ecf1b5635d176d501948949bf before the audio-bank substitution. The changed bank was verified in a second successful workflow run [38002719917](https://github.com/Kanish2002/GangsterRio-Remastered/actions/runs/38002719917) on commit 01f0dc931d753d60b9fadd8f21c82416a549524d, including build, 13 host tests, real Java RMS checks, all MIDI programs, and the full browser fixture flow; the test fixture is not a substitute game.
 
 ## Audio-bank substitution check
 
 The modified MIDI WebAssembly module compiled and instantiated in Node. All 128 program slots plus percussion produced finite, nonzero audio; minimum measured peak 0.03879. The test exercises actual FluidSynth output after replacing the complete embedded sample bank. This is synthesis validation, not a claim of authentic or HD remixed game audio.
+
+## Verified browser scope
+
+Chromium 141 via Playwright 1.56.1, 1280×800 then 390×844 viewport. Actual fixture code executed in Java through the same runtime; pixel output verified input and suspended/resumed simulation. Exported records restored after page reload, preserving a saved fixture counter. No page errors were captured. Desktop/mobile screenshots were produced in CI and the mobile image was visually inspected. The mobile button test uses pointer clicks at a mobile viewport, not a physical touchscreen or simultaneous-finger test. This still does not verify all target-game systems or real Android/iOS behavior.
+
+Production: **not deployed or tested**. The Vercel API rejected the explicit existing project/team with 403: no access to `kanish-tech`. Reconnect Vercel using an account/connection authorized for that scope before deployment; do not change protection settings to solve this access error.

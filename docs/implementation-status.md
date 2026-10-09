@@ -7,8 +7,9 @@ This is an emulation-first preservation milestone. It is **not a completed HD re
 | Supplied JAR inventory, manifest, hash, selected bytecode/decompiler inspection | Completed, with authenticity and reconstruction limits |
 | Upstream browser launch beyond menus into beach tutorial | Verified |
 | Self-hosted pinned runtime build | Verified locally |
-| Integrated local JAR/JAD import, keyboard/touch controls, settings and original lifecycle pause | Implemented; production tests pending |
-| Original RMS backup/export/import and browser persistence | Implemented; production tests pending |
+| Integrated local JAR import, keyboard/pointer-button controls and original lifecycle pause | Verified through an original Java ME fixture in Chromium CI; target-game production test blocked |
+| Optional JAD, settings/key remapping | Implemented; parser/input unit tests passed; full UI combinations unverified |
+| Original RMS backup/export/import and browser persistence | Verified with actual fixture RecordStores, reload and restore in Chromium CI; campaign checkpoints unverified |
 | Gamepad mapping | Unit tested; hardware test pending |
 | Full original gameplay/campaign compatibility | Unverified |
 | HD sprites, new animation frames, environmental artwork | Not implemented |
@@ -16,7 +17,7 @@ This is an emulation-first preservation milestone. It is **not a completed HD re
 | GitHub source publication | Verified remote commit e8a9c9aae9f7101a19d14dfc60f1aea09f37deea |
 | Vercel deployment | Blocked by 403: current connection lacks access to kanish-tech; no CLI credentials |
 | Java RMS bridge | Real export/restore and rejected-import preservation test passed |
-| CI browser integration | Passed actual Chromium runtime/keyboard/pause/RMS/reload/390px touch checks on run 38002090772; audio-bank change needs fresh pass |
+| CI browser integration | Passed actual Chromium runtime/keyboard/pause/RMS/reload/390px pointer-button checks on run 38002719917, including changed audio bank |
 | Audio-bank provenance | Unlicensed upstream sample bank replaced by original GPL synth samples; all 128 programs + percussion emit audio |
 | Mobile/iOS/fullscreen/performance targets | Unverified |
 
