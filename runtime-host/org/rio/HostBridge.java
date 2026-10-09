@@ -34,7 +34,7 @@ public class HostBridge {
     private static Path rmsPath(String appId) {
         Path root = Paths.get("/files").toAbsolutePath().normalize();
         Path path = root.resolve(appId).resolve("rms").normalize();
-        if (!path.startsWith(root) || appId.contains("/") || appId.contains("\\") || appId.equals("..")) throw new IllegalArgumentException("Invalid app id");
+        if (!path.startsWith(root) || !appId.matches("rio-[a-zA-Z0-9-]+")) throw new IllegalArgumentException("Invalid app id");
         return path;
     }
     public static byte[] exportRms(String appId) throws Exception {
@@ -45,6 +45,7 @@ public class HostBridge {
     // Called before starting the MIDlet, never while its RecordStores are open.
     public static void importRms(String appId, byte[] zip) throws Exception {
         Path path = rmsPath(appId);
+        if (zip == null || zip.length < 22 || zip[0] != 80 || zip[1] != 75) throw new IllegalArgumentException("Invalid RMS ZIP");
         int count = 0; long expanded = 0;
         try (ZipInputStream input = new ZipInputStream(new ByteArrayInputStream(zip))) {
             ZipEntry entry; byte[] buffer = new byte[8192];
@@ -57,6 +58,7 @@ public class HostBridge {
         }
         Files.createDirectories(path);
         byte[] backup = FilesUtil.zipDirectory(path);
+        if (backup == null) throw new IllegalStateException("Cannot back up existing RMS");
         try {
             FilesUtil.emptyDirectory(path.toFile());
             FilesUtil.unzipToDirectory(path.toString(), zip);

@@ -9,3 +9,4 @@ dist/
 *.sav
 *.rms
 .openai/
+browser-results/

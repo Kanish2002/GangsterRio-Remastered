@@ -35,3 +35,5 @@ Original missions, vehicles, physics, AI, and difficulty run as original bytecod
 ## Licenses
 
 Custom integration: GPL-3.0-or-later. The distribution includes FreeJ2ME-Web's license, corresponding runtime source, and the custom bridge source. Third-party components retain their own notices. CheerpJ is a separately hosted proprietary runtime; verify [its licensing conditions](https://cheerpj.com/docs/licensing) before commercial deployment. This project is not affiliated with Gameloft.
+
+GitHub Actions also runs the original host fixture in Playwright (`e2e/browser-check.mjs`) and publishes browser test artifacts. It never installs the proprietary game in CI. The first deployment attempt was blocked by the Vercel connection's missing access to the existing `kanish-tech` project scope; no live production URL has been verified.
